@@ -128,15 +128,30 @@ do
 	-- anti ClientWatchdog
 	local clientRemoteEvent = nevermore('RemoteEvent'):GetClient()
 	local actionType = nevermore('ActionType')
-	
+		
+	local actionTypeMap = {}
+
+	for name, index in next, actionType do
+		actionTypeMap[index] = name;
+	end
+
 	local oldSendToServer = clientRemoteEvent.SendToServer
 	function clientRemoteEvent:SendToServer(action, ...)
+		local args = { ... }
+
 		if (action == actionType.RequestReportStatus) then
-			-- block the reporter 
-			return 
+			if type(args[1]) == 'table' then
+				-- hi greg, i think i figured out why your game kicks me
+				-- thats not nice, tbh do I even need this bypass here?
+				-- oh well, have fun friend.
+
+				-- p.s. your context check doesn't work, try something new. i like to see fun stuff
+				-- <3 you
+				table.clear(args[1])
+			end
 		end
 
-		return oldSendToServer(self, action, ...)
+		return oldSendToServer(self, action, unpack(args))
 	end
 
 	-- silent aim hooks (theres like 9 billion projectile types)
