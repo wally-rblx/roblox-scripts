@@ -1,13 +1,12 @@
---[[
-	West X (free trial)
-	released because blissful is an idiot and continues to lie about his scripts detections among other things
-]]
+-- West X (The Wild West) 
+-- Free trial (12/8/21)
 
-local LOADER_URL = 'https://raw.githubusercontent.com/wally-rblx/roblox-scripts/main/west-x/loader.lua'
+-- Released for the reasons stated in the discord message.
+-- Use at your own risk. The game anticheat will detect you. 
+-- All logging mechanisms from the script should be disabled, but be cautious.
+
 local SCRIPT_URL = 'https://raw.githubusercontent.com/wally-rblx/roblox-scripts/main/west-x/script.lua'
-
 local SCRIPT_CONTENT = game:HttpGet(SCRIPT_URL)
-local LOADER_CONTENT = game:HttpGet(LOADER_URL)
 
 local encode, decode do
 	-- encoder fully remade by me
@@ -112,7 +111,7 @@ request = replaceclosure(syn.request, function(...)
 
 			return { Body = result, StatusCode = 200 }
 		elseif self.Url == 'https://blissfuls.world/westx/loader' then
-			return { Body = LOADER_CONTENT, StatusCode = 200 }
+			return { Body = SCRIPT_CONTENT, StatusCode = 200 }
 		else
 			return print('unhandled Uri', self.Url)
 		end
@@ -138,4 +137,4 @@ do
 end
 
 _G.key = game:GetService('HttpService'):GenerateGUID()
-loadstring(LOADER_CONTENT)()
+loadstring(SCRIPT_CONTENT)()
