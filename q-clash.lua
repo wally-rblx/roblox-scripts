@@ -156,6 +156,7 @@ do
 
 	-- silent aim hooks (theres like 9 billion projectile types)
 	local baseTool = nevermore('BaseTool')
+
 	local oldFireBullet = baseTool._fireBullet
 	local oldFireStraight = baseTool._fireStraightProjectile
 	local oldFireArced = baseTool._fireArcProjectile
@@ -235,6 +236,7 @@ do
 end
 
 library:SetWatermarkVisibility(false)
+
 local window = library:CreateWindow('Q-Clash') do 
 	local main = window:AddTab('Main') do
 		local column = main:AddLeftTabbox() do
@@ -286,12 +288,11 @@ local window = library:CreateWindow('Q-Clash') do
 					ESP.Boxes = Toggles.ESPShowBoxes.Value
 				end)
 
-				section:AddLabel('Ally color'):AddColorPicker('allyColor', { Default = Color3.fromRGB(0, 255, 140) })
-				section:AddLabel('Enemy color'):AddColorPicker('enemyColor', { Default = Color3.fromRGB(255, 25, 25) })
+				section:AddLabel('Player colors'):AddColorPicker('allyColor', { Default = Color3.fromRGB(0, 255, 140) }):AddColorPicker('enemyColor', { Default = Color3.fromRGB(255, 25, 25) })
 			end
 		end
 
-		local column = main:AddLeftTabbox() do
+		local column = main:AddRightTabbox() do
 			local section = column:AddTab('Credits') do
 				section:AddLabel('wally (BigTimbob @ v3rm) - Script')
 				section:AddLabel('Kiriot22 - ESP library')
