@@ -1,5 +1,5 @@
 local nevermore = require(game:GetService("ReplicatedStorage"):WaitForChild("Nevermore"));
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/wally-rblx/uwuware-ui/main/main.lua"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/UI%20Library%202.0.lua"))()
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 
 local services = setmetatable({}, { __index = function(s, key)
@@ -60,8 +60,8 @@ local onCircleStateUpdated do
 			local vector = Vector2.new(vector.X, vector.Y)
 			local distance = math.floor((vector - origin).magnitude)
 
-			if library.flags.showCircle then
-				if distance > library.flags.circleRadius then
+			if Toggles.showCircle and Toggles.showCircle.Value then
+				if distance > Options.circleRadius.Value then
 					continue
 				end
 			end
@@ -100,10 +100,10 @@ do
 		local plr = ESP:GetPlrFromChar(character)
 		if plr then
 			local isSameTeam = ESP:IsTeamMate(plr)
-			if (library.flags.highlightTarget and plr == library._target) then
-				return library.flags.highlightColor
+			if (Toggles.highlightTarget and Toggles.highlightTarget.Value and plr == library._target) then
+				return Options.highlightColor.Value
 			end
-			return (isSameTeam and library.flags.allyColor or library.flags.enemyColor)
+			return (isSameTeam and Options.allyColor.Value or Options.enemyColor.Value)
 		end
 		return nil
 	end
@@ -167,7 +167,7 @@ do
 		local arguments = {...}
 		local origin = arguments[2]
 
-		if library.flags.silentAim and library._target and (math.random(1, 100) <= library.flags.hitChance) then
+		if Toggles.silentAim.Value and library._target and (math.random(1, 100) <= Options.hitChance.Value) then
 			local tCharacter = library._target.Character;
 			local tHumanoid = tCharacter and tCharacter:FindFirstChildWhichIsA('Humanoid')
 			local part = parts[math.random(#parts)]
@@ -185,7 +185,7 @@ do
 		local arguments = {...}
 		local origin = arguments[3]
 
-		if library.flags.silentAim and library._target and (math.random(1, 100) <= library.flags.hitChance) then 
+		if Toggles.silentAim.Value and library._target and (math.random(1, 100) <= Options.hitChance.Value) then
 			local tCharacter = library._target.Character;
 			local tHumanoid = tCharacter and tCharacter:FindFirstChildWhichIsA('Humanoid')
 			local part = parts[math.random(#parts)]
@@ -202,7 +202,7 @@ do
 		local arguments = {...}
 		local origin = arguments[2]
 
-		if library.flags.silentAim and library._target and (math.random(1, 100) <= library.flags.hitChance) then
+		if Toggles.silentAim.Value and library._target and (math.random(1, 100) <= Options.hitChance.Value) then
 			local tCharacter = library._target.Character;
 			local tHumanoid = tCharacter and tCharacter:FindFirstChildWhichIsA('Humanoid')
 			local part = parts[math.random(#parts)]
@@ -218,7 +218,7 @@ do
 
 	function baseTool:IfCanReloadThen(...)
 		local arguments = {...}
-		if library.flags.instantReload and type(arguments[2]) == 'number' then
+		if Toggles.instantReload.Value and type(arguments[2]) == 'number' then
 			arguments[2] = 1/1000
 		end
 		return oldIfCanReload(self, unpack(arguments))
@@ -227,46 +227,85 @@ do
 	local oldGetSpreadInfluence = baseTool._getSpreadInfluence
 	function baseTool:_getSpreadInfluence(...)
 		local result = oldGetSpreadInfluence(self, ...)
-		result *= ((100 - library.flags.spreadScale) / 100) --> 100% reduction = 0% spread lol
+		result *= ((100 - Options.spreadScale.Value) / 100) --> 100% reduction = 0% spread lol
 		return result
 	end
 
 	set_identity(current_identity)
 end
 
-local window = library:CreateWindow('Q-Clash') do
-	local section = window:AddFolder('Combat') do
-		section:AddToggle({ text = 'Silent aim', flag = 'silentAim' })
-		section:AddSlider({ text = 'Hit chance', flag = 'hitChance', min = 0, max = 100, value = 100 })
+library:SetWatermarkVisibility(false)
+local window = library:CreateWindow('Q-Clash') do 
+	local main = window:AddTab('Main') do
+		local column = main:AddLeftTabbox() do
+			local section = column:AddTab('Combat') do
+				section:AddToggle('silentAim', { Text = 'Silent aim' })
+				section:AddSlider('hitChance', { Text = 'Hit chance' , Min = 0, Max = 100, Default = 0, Rounding = 0, Suffix = '%' })
+				section:AddToggle('showCircle', { Text = 'Show circle' }):AddColorPicker('circleColor', { Default = Color3.new(1, 1, 1) })
+				section:AddSlider('circleRadius', { Text = 'Circle radius', Min = 0, Max = 300, Default = 0, Rounding = 0 })
+				section:AddToggle('highlightTarget', { Text = 'Highlight target' }):AddColorPicker('highlightColor', { Default = Color3.new(1, 1, 1) })
 
-		section:AddToggle({ text = 'Show circle', flag = 'showCircle', callback = onCircleStateUpdated })
-		section:AddSlider({ text = 'Circle radius', min = 0, max = 300, flag = 'circleRadius', callback = onCircleStateUpdated })
-		section:AddColor({ text = 'Circle color', flag = 'circleColor', callback = onCircleStateUpdated })
+				Options.circleRadius:OnChanged(function()
+					onCircleStateUpdated(Options.circleRadius.Value)
+				end)
 
-		section:AddToggle({ text = 'Highlight target', flag = 'highlightTarget' })
-		section:AddColor({ text = 'Highlight color', flag = 'highlightColor' })
-	end
+				Options.circleColor:OnChanged(function()
+					onCircleStateUpdated(Options.circleColor.Value)
+				end)
 
-	local section = window:AddFolder('Gun mods') do
-		section:AddSlider({ text = 'Spread reducer', flag = 'spreadScale', min = 0, max = 100, value = 0 })
-		section:AddToggle({ text = 'Instant reload', flag = 'instantReload' })
-	end
+				Toggles.showCircle:OnChanged(function()
+					onCircleStateUpdated(Toggles.showCircle.Value)
+				end)
+			end
 
-	local section = window:AddFolder('Visuals') do
-		section:AddToggle({ text = 'Enabled', callback = function(state) ESP:Toggle(state) end })
-		section:AddToggle({ text = 'Show teammates', callback = function(state) ESP.TeamMates = state; end })
-		section:AddToggle({ text = 'Text', callback = function(state) ESP.Names = state; end })
-		section:AddToggle({ text = 'Tracers', callback = function(state) ESP.Tracers = state; end })
-		section:AddToggle({ text = 'Boxes', callback = function(state) ESP.Boxes = state; end  })
+			local section = column:AddTab('Gun mods') do
+				section:AddSlider('spreadScale', { Text = 'Spread reducer', Min = 0, Max = 100, Default = 0, Rounding = 0 })
+				section:AddToggle('instantReload', { Text = 'Instant reload' })
+			end
+		end
 
-		section:AddColor({ text = 'Ally color', flag = 'allyColor', color = Color3.fromRGB(0, 255, 140) })
-		section:AddColor({ text = 'Enemy color', flag = 'enemyColor', color = Color3.fromRGB(255, 25, 25) })
-	end
+		local column = main:AddLeftTabbox() do
+			local section = column:AddTab('Visuals') do
+				section:AddToggle('ESPEnabled', { Text = 'Enabled' }):OnChanged(function()
+					ESP:Toggle(Toggles.ESPEnabled.Value)
+				end)
 
-	local section = window:AddFolder('Credits') do
-		section:AddLabel({ text = 'Script by wally (BigTimbob)' })
-		section:AddLabel({ text = 'UI library by Jan' })
+				section:AddToggle('ESPShowTeams', { Text = 'Show teammates' }):OnChanged(function()
+					ESP.TeamMates = Toggles.ESPShowTeams.Value
+				end)
+
+				section:AddToggle('ESPShowNames', { Text = 'Show names' }):OnChanged(function()
+					ESP.Names = Toggles.ESPShowNames.Value
+				end)
+
+				section:AddToggle('ESPShowTracers', { Text = 'Show tracers' }):OnChanged(function()
+					ESP.Tracers = Toggles.ESPShowTracers.Value
+				end)
+
+				section:AddToggle('ESPShowBoxes', { Text = 'Show boxes' }):OnChanged(function()
+					ESP.Boxes = Toggles.ESPShowBoxes.Value
+				end)
+
+				section:AddLabel('Ally color'):AddColorPicker('allyColor', { Default = Color3.fromRGB(0, 255, 140) })
+				section:AddLabel('Enemy color'):AddColorPicker('enemyColor', { Default = Color3.fromRGB(255, 25, 25) })
+			end
+		end
+
+		local column = main:AddLeftTabbox() do
+			local section = column:AddTab('Credits') do
+				section:AddLabel('wally (BigTimbob @ v3rm) - Script')
+				section:AddLabel('Kiriot22 - ESP library')
+				section:AddLabel('Inori - UI library')
+
+				section:AddLabel('Updated 12/26/21')
+				section:AddButton('Copy discord server', function()
+					 setclipboard("https://wally.cool/discord")
+					 library:Notify('Copied discord to clipboard!')
+				end)
+			end
+		end
 	end
 end
 
-library:Init()
+library:Notify('Script fully loaded!')
+library:Notify('Press "RightShift" to toggle the menu!')
