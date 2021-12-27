@@ -1,5 +1,5 @@
 local nevermore = require(game:GetService("ReplicatedStorage"):WaitForChild("Nevermore"));
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/UI%20Library%202.0.lua"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/wally-rblx/LinoriaLib/main/Library.lua"))()
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 
 local services = setmetatable({}, { __index = function(s, key)
