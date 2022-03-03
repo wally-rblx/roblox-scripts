@@ -526,6 +526,7 @@ local window = UI:CreateWindow('Frontlines') do
 		ThemeManager:ApplyToTab(tSettings)
 
 		local tSaveSettings = tSettings:AddRightGroupbox('Save settings')
+		local tCredits = tSettings:AddRightGroupbox('Credits')
 
 		tSaveSettings:AddButton('Save settings', function()
 			if SaveManager:Save('Default') then
@@ -539,6 +540,18 @@ local window = UI:CreateWindow('Frontlines') do
 				UI:Notify('Loaded settings!', 2)
 			else
 				UI:Notify('Failed to save settings', 2)
+			end
+		end)
+
+		tCredits:AddLabel('wally - Script')
+		tCredits:AddLabel('Inori - UI library')
+		tCredits:AddLabel('Kiriot22 - ESP library')
+
+		tCredits:AddButton('Copy discord invite', function()
+			if pcall(setclipboard, 'https://wally.cool/discord') then
+				UI:Notify('Copied discord invite!', 3)
+			else
+				UI:Notify('Failed to copy discord invite!', 3)
 			end
 		end)
 	end
