@@ -556,3 +556,6 @@ local window = UI:CreateWindow('Frontlines') do
 		end)
 	end
 end
+
+UI:Notify('Frontlines script loaded!', 3)
+UI:Notify('Press RightControl to open the menu!', 3)
