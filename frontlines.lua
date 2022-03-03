@@ -1,13 +1,18 @@
 local services = setmetatable({}, { __index = function(self, key) return game:GetService(key) end })
 local client = services.Players.LocalPlayer;
 
+local request = request or http_request
+if type(syn) == 'table' and type(syn.request) == 'function' then
+	request = syn.request
+end
+
 local KickClient, LoadFromGithub do
 	function KickClient(reason)
 		return client:Kick(reason)
 	end
 
 	local function GetUrl(url)
-		local response = syn.request({ Url = url, Method = 'GET' })
+		local response = request({ Url = url, Method = 'GET' })
 
 		local success = response.Success;
 		local body = response.Body;
