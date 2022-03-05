@@ -79,8 +79,8 @@ local sol_time_sequence_value = enums.sol_time_sequence_value;
 
 local getCharacter, getTeam, getHealth, getPlayerFromChar do
 	local function getPlayerSolId(player)
-		for idx, plr in next, globals.cli_plrs do
-			if player == plr then
+		for idx, plr in next, globals.cli_names do
+			if player.Name == plr then
 				return idx
 			end
 		end
@@ -113,7 +113,10 @@ local getCharacter, getTeam, getHealth, getPlayerFromChar do
 	function getPlayerFromChar(character)
 		for id, model in next, global_sol_state.r15_models do
 			if model == character then
-				return globals.cli_plrs[id]
+				local name = globals.cli_names[id]
+				if name then
+					return services.Players:FindFirstChild(name)
+				end
 			end
 		end
 	end
