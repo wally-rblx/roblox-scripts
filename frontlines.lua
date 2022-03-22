@@ -61,9 +61,32 @@ ThemeManager:SetFolder('frontlines-cheat')
 SaveManager:SetFolder('frontlines-cheat')
 
 -- Utility functions
-local globals = getrenv()._G.globals;
-local utils = getrenv()._G.utils;
-local enums = getrenv()._G.enums;
+
+local globals, utils, enums do
+	local ctr = 0;
+	while true do
+		local gc = getgc(true)
+		for i = 1, #gc do
+			local o = gc[i]
+			if type(o) == 'table' then
+				if rawget(o, 'gbl_sol_state') and rawget(o, 'fpv_sol_recoil') then
+					globals = o;
+				elseif rawget(o, 'sol_state_class') and rawget(o, 'sol_firearm_operation') then
+					enums = o;
+				elseif rawget(o, 'gbus') and rawget(o.gbus, 'EVENT_ENUM') then
+					utils = o;
+				end
+			end
+		end
+		if enums and globals and utils then break end
+
+		ctr = ctr + 1
+		if ctr > 5 then
+			client:Kick('Failed to initiate frontlines-cheat!')
+		end
+		task.wait(1)
+	end
+end
 
 local event_enum = utils.gbus.EVENT_ENUM
 
@@ -424,8 +447,8 @@ do
 			end
 
 			if friendly_params and enemy_params then
-				friendly_params.FilterDescendantsInstances = Toggles.Wallbang.Value and { workspace:findFirstChild('workspace') } or {}
-				enemy_params.FilterDescendantsInstances = Toggles.Wallbang.Value and { workspace:findFirstChild('workspace') } or {}
+			--	friendly_params.FilterDescendantsInstances = Toggles.Wallbang.Value and { workspace:findFirstChild('workspace') } or {}
+			--	enemy_params.FilterDescendantsInstances = Toggles.Wallbang.Value and { workspace:findFirstChild('workspace') } or {}
 			end
 		elseif event == event_enum.FPV_SOL_EQUIP then
 			ApplyWeaponMods(fpv_sol_equipment.curr_equipment)
@@ -481,7 +504,7 @@ local window = UI:CreateWindow('Frontlines') do
 
 	do
 		gAimbot:AddToggle('SilentAim', { Text = 'Silent aim' })
-		gAimbot:AddToggle('Wallbang', { Text = 'Wallbang' })
+		-- gAimbot:AddToggle('Wallbang', { Text = 'Wallbang' })
 
 		gAimbot:AddToggle('ShowCircle', { Text = 'Show circle' }):AddColorPicker('CircleColor', { Default = Color3.new(1, 1, 1) })
 		gAimbot:AddSlider('CircleRadius', { Text = 'Circle radius', Min = 0, Max = 300, Default = 0, Rounding = 0 })
