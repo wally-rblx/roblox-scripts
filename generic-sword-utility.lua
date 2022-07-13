@@ -78,7 +78,7 @@ do
 		local parts = enemy.Character:GetChildren()
 
 		for _, part in next, parts do
-			if part:IsA('BasePart') then
+			if part:IsA('BasePart') and enemy:DistanceFromCharacter(part.Position) <= 10 then
 				firetouchinterest(tool.Handle, part, 0)
 				firetouchinterest(tool.Handle, part, 1)
 			end
